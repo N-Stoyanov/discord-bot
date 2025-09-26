@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
+import random
 
 #To secure the token code 
 load_dotenv()
@@ -34,6 +35,11 @@ async def hello(ctx):
 async def shutdown(ctx):
     await ctx.send("Shutting down...")
     await bot.close()
+
+@bot.command()
+async def roll(ctx):
+    number = random.randint(1,6)
+    await ctx.send(f"{ctx.author.mention} rolled a {number}!")
 
 @bot.event
 async def on_reaction_add(reaction, user):
