@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import os
 from dotenv import load_dotenv
 
@@ -8,28 +9,36 @@ load_dotenv()
 #Actual Bot Code
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
-class Client(discord.Client):
-    async def on_ready(self):
-        print(f'Logged on as {self.user}!')
-
-    async def on_message(self, message):
-        if message.author == self.user:
-            return
-        if message.content.startswith('hello'):
-            await message.channel.send(f'Hi there {message.author}')
-        if message.content == "!shutdown":
-            await message.channel.send("Shutting down...")
-            await client.close()    
-    
-    async def on_reaction_add(self, reaction, user):
-        await reaction.message.channel.send('You reacted')
-
+if TOKEN is None:
+    print("Error: DISCORD_BOT_TOKEN not found in .env file.")
+    exit()
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.reactions = True
 
-client = Client(intents=intents)
-client.run(TOKEN)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
 
+    # Command: !hello
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f"Hi there {ctx.author.mention}!")
+
+# Command: !shutdown
+@bot.command()
+async def shutdown(ctx):
+    await ctx.send("Shutting down...")
+    await bot.close()
+
+@bot.event
+async def on_reaction_add(reaction, user):
+    if user != bot.user:
+        await reaction.message.channel.send(f"{user.mention} reacted with {reaction.emoji}")
+
+bot.run(TOKEN)
 
