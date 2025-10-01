@@ -4,10 +4,8 @@ import os
 from dotenv import load_dotenv
 import random
 
-#To secure the token code 
 load_dotenv()
 
-#Actual Bot Code
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 
 if TOKEN is None:
